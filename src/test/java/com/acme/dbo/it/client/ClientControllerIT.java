@@ -22,10 +22,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @ActiveProfiles("preprod")
 @Slf4j
 @FieldDefaults(level = PRIVATE)
-@Tag("docker")
-@Testcontainers
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-@Transactional
+@Tag("docker")      // используем docker
+@Testcontainers     // и тест-контейнеры
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class) // устанавливаем MethodOrderer.OrderAnnotation классом для тестирования
+@Transactional      // устанавливаем транзакции
 public class ClientControllerIT {
     @Autowired ClientController sut;
 
@@ -33,28 +33,28 @@ public class ClientControllerIT {
     // @Container PostgreSQLContainer<?> pgFake = new PostgreSQLContainer<>("postgres:10-alpine").withDatabaseName("dbo-db").withUsername("dbo").withPassword("P@ssw0rd");
 
     @Test
-    @Order(1)
-    @Rollback(false)
+    @Order(1)   // заявка 1
+    @Rollback(false)    // транзакция без отката
     public void shouldMakeSideEffect() {
         sut.createClient(new Client(100L, "new@new.new", "new_secret", "new_salt", now(), true));
-    }
+    } // в ClientController создаем клиента с параметрами
 
     @Test
-    @Order(2)
+    @Order(2) //заявка 2
     public void shouldGetClientWhenSavedAsSideEffectOfPreviousTest() {
-        assertThat(
+        assertThat(  // проверяем что у полученных клиентов после прогонки предыдущей транзкции
                 sut.getClients().stream().map(Client::getLogin).toArray()
-        ).contains(
+        ).contains(  // есть клиент с логином из первой транзакции
                 "new@new.new"
         );
     }
 
     @Test
     public void shouldGetAllClientsWhenPrepopulatedDbHasSome() {
-        assertThat(
+        assertThat(         // проверяем что в клиентах есть предварительно занесенные пользователи
                 sut.getClients().stream().map(Client::getLogin).toArray()
         ).contains(
-                "admin@acme.com",
+                "admin@acme.com",       // с такими логинами
                 "account@acme.com",
                 "disabled@acme.com"
         );

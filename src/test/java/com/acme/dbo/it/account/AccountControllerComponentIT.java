@@ -24,27 +24,27 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @DisabledIf(expression = "#{environment['features.account'] == 'false'}", loadContext = true)
-@ExtendWith(MockitoExtension.class)
-@WebMvcTest(AccountController.class)
+@ExtendWith(MockitoExtension.class)    // используем расширение Mockito
+@WebMvcTest(AccountController.class)  // указываем, что тестируем только MVC часть контроллера AccountController
 @ActiveProfiles("it")
 @Slf4j
 @FieldDefaults(level = PRIVATE)
 public class AccountControllerComponentIT {
     @Autowired AccountController sut;
-    @MockBean AccountService accountServiceMock;
-    @Mock Account accountStub;
+    @MockBean AccountService accountServiceMock;  // создаем заглушку AccountService с помощью SpringBoot
+    @Mock Account accountStub;  // создаем заглушку Account  с помощью Mockito
 
     @Test
     public void shouldNotGetAccountsWhenMockedDbIsEmpty() {
-        given(accountServiceMock.getAccounts()).willReturn(emptyList());
-        assertThat(sut.getAccounts()).isEmpty();
+        given(accountServiceMock.getAccounts()).willReturn(emptyList()); // устанавливаем что в AccountService список аккаунтов пустой
+        assertThat(sut.getAccounts()).isEmpty(); // проверяем что контроллер AccountController возвращает пустое значение аккаунтов
     }
 
     @Test
     public void shouldGetAccountWhenMockedDbHasOne() {
-        given(accountServiceMock.getAccounts()).willReturn(singletonList(accountStub));
+        given(accountServiceMock.getAccounts()).willReturn(singletonList(accountStub)); // устанавливаем что в AccountService в списке аккаунтов одна запись accountStub
 
-        assertThat(sut.getAccounts()).containsOnly(accountStub);
-        verify(accountServiceMock, times(1)).getAccounts();
+        assertThat(sut.getAccounts()).containsOnly(accountStub); // проверяем что контроллер AccountController возвращает только значение accountStub
+        verify(accountServiceMock, times(1)).getAccounts(); // проверяем количество обращений к Mock объекту
     }
 }

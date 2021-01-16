@@ -33,14 +33,14 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @DisabledIf(expression = "#{environment['features.account'] == 'false'}", loadContext = true)
-@RestClientTest(AccountService.class)
-@AutoConfigureWebClient(registerRestTemplate = true)
+@RestClientTest(AccountService.class)      // включаем для теста только REST
+@AutoConfigureWebClient(registerRestTemplate = true)       // автоконфигурация вебклиента
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("it")
 @Slf4j
 @FieldDefaults(level = PRIVATE)
 public class AccountServiceComponentIT {
-    @Value("${spring.integration.legacyAccountingSystem.baseUrl}") String legacyAccountingSystemBaseUrl;
+    @Value("${spring.integration.legacyAccountingSystem.baseUrl}") String legacyAccountingSystemBaseUrl; // устанавливаем значение переменной из Spring данных
     @Value("${spring.integration.legacyAccountingSystem.accountsEndpoint}") String accountEndpoint;
     @Autowired AccountService sut;
     @Autowired ObjectMapper objectMapper;
@@ -51,17 +51,17 @@ public class AccountServiceComponentIT {
     public void setupAccountRepository() {
         given(accountRepositoryStub.findAll()).willReturn(new ArrayList<>(1));
     }
-
+    // устанавливаем что в AccountRepository будет одно значение
     @Test
     public void shouldGetAccountsWhenLegacyServiceHasOnes() throws JsonProcessingException {
-        final Account accountStub = builder().id(-1L).clientId(-1L).amount(-1.).build();
-        final Account[] accounts = { accountStub };
+        final Account accountStub = builder().id(-1L).clientId(-1L).amount(-1.).build(); // создаем аккаунт с параметрами
+        final Account[] accounts = { accountStub };     // запихиваем аккаунты в массив
 
-        legacyServiceStub
-                .expect(requestTo(legacyAccountingSystemBaseUrl + accountEndpoint))
-                .andExpect(method(HttpMethod.GET))
-                .andRespond(withSuccess(objectMapper.writeValueAsString(accounts), MediaType.APPLICATION_JSON));
-
-        assertThat(sut.getAccounts()).containsExactly(accountStub);
-    }
+        legacyServiceStub       // в заглушку REST ServiseServer отправляем команды
+                .expect(requestTo(legacyAccountingSystemBaseUrl + accountEndpoint)) // делаем запрос на урл из настроек
+                .andExpect(method(HttpMethod.GET)) // ожидает Get ответ
+                .andRespond(withSuccess(objectMapper.writeValueAsString(accounts), MediaType.APPLICATION_JSON)); // если положительный ответ отвечаем
+                                        // json смаппенные значения из аккаунтов
+        assertThat(sut.getAccounts()).containsExactly(accountStub); // проверяем что аккаунты в AccountService
+    }                       // содержат изначально слзданный
 }

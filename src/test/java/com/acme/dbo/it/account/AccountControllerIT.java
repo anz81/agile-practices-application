@@ -23,10 +23,10 @@ public class AccountControllerIT {
 
     @Test
     public void shouldGetAllAccountsWhenPrepopulatedDbHasSome() {
-        assertThat(sut.getAccounts()
-                .stream()
-                .map(Account::getId)
-                .toArray()
-        ).contains(1L,2L,3L);
+        assertThat(sut.getAccounts()    // проверяем что аккаунты из авто AccountController
+                .stream()       // запихиваем ответы в поток
+                .map(Account::getId)    // мапим аккаунты по Id
+                .toArray()          // запихиваем ответы в массив
+        ).contains(1L,2L,3L);       // массив ответов должен содержать такие значения
     }
 }

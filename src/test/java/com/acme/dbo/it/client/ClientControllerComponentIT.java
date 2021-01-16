@@ -35,15 +35,15 @@ public class ClientControllerComponentIT {
     @MockBean AccountRepository accountRepositoryMock;
     @MockBean ClientRepository clientRepositoryMock;
 
-    @Test
+    @Test   // тест
     public void shouldGetErrorWhenGetNonExistentClient() {
-        given(clientRepositoryMock.findById(anyLong())).willReturn(empty());
-
+        given(clientRepositoryMock.findById(anyLong())).willReturn(empty()); // дано что в репозитории клиентов пусто
+            // задаем обработчик ошибки в котором проверяем что класс EntityNotFoundException
         final EntityNotFoundException exceptionThrown = assertThrows(EntityNotFoundException.class,
-                () -> sut.getClient(1));
+                () -> sut.getClient(1)); // выбрасывает ошибку если значение количества клиентов 1
 
-        assertThat(exceptionThrown.getMessage())
-                .isNotEmpty()
-                .isEqualTo("Client #1");
+        assertThat(exceptionThrown.getMessage())    // проверяем что наш обработчик ошибок
+                .isNotEmpty()                       // не пустой
+                .isEqualTo("Client #1");            // и равняется CLient #1
     }
 }

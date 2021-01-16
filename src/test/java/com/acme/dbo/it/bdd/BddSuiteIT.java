@@ -8,8 +8,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 @SpringBootTest
 @ActiveProfiles("it")
-@RunWith(Cucumber.class)
-@CucumberOptions(
+@RunWith(Cucumber.class)        // запускаем тест с Cucumber
+@CucumberOptions(               // задаем опции Cucumber
         plugin = {
                 "pretty",
                 "de.monochromata.cucumber.report.PrettyReports:target/",

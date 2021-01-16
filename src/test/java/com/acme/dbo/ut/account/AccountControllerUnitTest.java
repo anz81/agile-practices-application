@@ -44,4 +44,7 @@ public class AccountControllerUnitTest {
         assertThat(sut.getAccounts()).containsOnly(accountStub);
         verify(accountServiceMock, times(1)).getAccounts();
     }
-}
+}   // перед исполнением задаем AccountController - заглушку Mock
+    // дано: что заглушка AccountService возвращает одно значение Account
+    // проверяем: что AccountService содержит только одно значение Account
+    // проверям что обращение к методу getAcounts() происходило один раз

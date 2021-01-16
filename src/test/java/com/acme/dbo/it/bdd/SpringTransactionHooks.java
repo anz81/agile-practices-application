@@ -29,11 +29,11 @@ import org.springframework.transaction.support.SimpleTransactionStatus;
  *
  * https://github.com/cucumber/cucumber-jvm/blob/master/examples/spring-txn/src/test/java/io/cucumber/examples/spring/txn/SpringTransactionHooks.java
  */
-public class SpringTransactionHooks implements BeanFactoryAware {
-    private BeanFactory beanFactory;
+public class SpringTransactionHooks implements BeanFactoryAware { // задаем класс включающий класс BeanFactoryAware
+    private BeanFactory beanFactory;        // задаем поле типа BeanFactory
     private String txnManagerBeanName;
 
-    @Override
+    @Override               // переопределяем методы
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;
     }
@@ -56,16 +56,16 @@ public class SpringTransactionHooks implements BeanFactoryAware {
 
     private TransactionStatus transactionStatus;
 
-    @Before(value = "@tx", order = 100)
-    public void startTransaction() {
+    @Before(value = "@tx", order = 100) // перед запуском
+    public void startTransaction() { // запускаем новую транзацию с дефолтными значениями
         transactionStatus = obtainPlatformTransactionManager().getTransaction(new DefaultTransactionDefinition());
     }
 
-    @After(value = "@tx", order = 100)
+    @After(value = "@tx", order = 100)  // после запуска откатываем транзакцию
     public void rollBackTransaction() {
         obtainPlatformTransactionManager().rollback(transactionStatus);
     }
-
+                    //
     public PlatformTransactionManager obtainPlatformTransactionManager() {
         if (getTxnManagerBeanName() == null) {
             return beanFactory.getBean(PlatformTransactionManager.class);
